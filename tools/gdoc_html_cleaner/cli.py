@@ -86,15 +86,15 @@ def save_cleaned_html(content: str, default_dir: str) -> None:
             with open(output_path, "w", encoding="utf-8") as f:
                 f.write(content)
 
-            print(f"Cleaned HTML written to: {output_path}")
+            print(f"Cleaned HTML saved to: {output_path}")
             return
         except PermissionError:
-            print("You do not have permission to save the selected file.")
+            print("You do not have permission to save the file.")
             messagebox.showerror(
                 "Permission Denied",
                 f"Permission denied when trying to save to {output_path}. Please try again.",
             )
-        except IOError:
+        except OSError:
             print("Something went wrong when saving the file. Please try again.")
             messagebox.showerror(
                 "File Error",
