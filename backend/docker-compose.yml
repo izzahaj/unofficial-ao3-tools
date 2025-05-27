@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    image: izzahaj/unofficial-ao3-tools/backend:latest
+    container_name: backend
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=dev
+    command: flask run --host=0.0.0.0 --port=5000
+    volumes:
+      - .:/app  # Mount code for live reload
