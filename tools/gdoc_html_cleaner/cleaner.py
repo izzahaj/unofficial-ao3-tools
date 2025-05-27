@@ -9,7 +9,7 @@ from typing import Tuple, Dict, List, Optional
 
 def clean(html_str: str) -> str:
     """
-    Cleans HTML content exported from Google Docs and returns simplified HTML.
+    Cleans HTML content exported from Google Docs and returns simplified AO3-compatible HTML.
 
     This includes extracting styles, applying semantic tag transformations,
     consolidating formatting, and cleaning up HTML structure.
@@ -30,7 +30,7 @@ def extract_styles(
     soup: BeautifulSoup,
 ) -> Tuple[Dict[str, Optional[str]], Dict[str, Dict[str, Optional[str]]]]:
     """
-    Extracts text alignment and style properties from CSS classes defined in the \<style> tag.
+    Extracts text alignment and style properties from CSS classes defined in the \\<style> tag.
 
     Args:
         soup (BeautifulSoup): Parsed HTML document.
@@ -91,7 +91,7 @@ def apply_transformations(
 
     These include:
         - Applying paragraph alignment
-        - Replacing \<span> tags with semantic tags
+        - Replacing \\<span> tags with semantic tags
         - Merging adjacent semantic tags
         - Flattening spans
         - Removing newlines
@@ -124,7 +124,7 @@ def apply_paragraph_alignment(
     soup: BeautifulSoup, class_align_map: Dict[str, Optional[str]]
 ) -> BeautifulSoup:
     """
-    Applies alignment styles to \<p> tags based on mapped class alignments.
+    Applies alignment styles to \\<p> tags based on mapped class alignments.
 
     Also removes unused class attributes after processing.
 
@@ -133,7 +133,7 @@ def apply_paragraph_alignment(
         class_align_map (dict): Maps class names to text alignment values.
 
     Returns:
-        BeautifulSoup: Updated soup with \<p> alignment applied.
+        BeautifulSoup: Updated soup with \\<p> alignment applied.
     """
     for p in soup.find_all("p"):
         classes = p.get("class", [])
@@ -161,7 +161,7 @@ def replace_spans_with_semantic_tags(
     soup: BeautifulSoup, class_style_map: Dict[str, Dict[str, Optional[str]]]
 ) -> BeautifulSoup:
     """
-    Replaces \<span> tags with semantic HTML tags based on associated styles.
+    Replaces \\<span> tags with semantic HTML tags based on associated styles.
 
     Args:
         soup (BeautifulSoup): The parsed HTML document.
@@ -207,10 +207,10 @@ def map_classes_to_semantic_tags(
     Maps class names to semantic HTML tags based on style properties.
 
     Supported formatting:
-        - \<strong> for bold
-        - \<em> for italic
-        - \<u> for underline
-        - \<s> for strikethrough
+        - \\<strong> for bold
+        - \\<em> for italic
+        - \\<u> for underline
+        - \\<s> for strikethrough
 
     Args:
         class_names (List[str]): List of CSS class names to map.
@@ -287,10 +287,10 @@ def merge_similar_adjacent_semantic_tags(soup: BeautifulSoup) -> BeautifulSoup:
     Merges adjacent identical semantic tags for all supported types.
 
     Supported tags:
-        - \<strong> for bold
-        - \<em> for italic
-        - \<u> for underline
-        - \<s> for strikethrough
+        - \\<strong> for bold
+        - \\<em> for italic
+        - \\<u> for underline
+        - \\<s> for strikethrough
 
     Args:
         soup (BeautifulSoup): The parsed HTML document.
@@ -305,7 +305,7 @@ def merge_similar_adjacent_semantic_tags(soup: BeautifulSoup) -> BeautifulSoup:
 
 def consolidate_spans_in_paragraphs(soup: BeautifulSoup) -> BeautifulSoup:
     """
-    Flattens \<span> tags that are purely used for plain text into raw text nodes.
+    Flattens \\<span> tags that are purely used for plain text into raw text nodes.
 
     Args:
         soup (BeautifulSoup): The parsed HTML document.
@@ -342,7 +342,7 @@ def consolidate_spans_in_paragraphs(soup: BeautifulSoup) -> BeautifulSoup:
 
 def strip_paragraph_newlines(soup: BeautifulSoup) -> BeautifulSoup:
     """
-    Removes newline characters from within paragraph (\<p>) text nodes.
+    Removes newline characters from within paragraph (\\<p>) text nodes.
 
     Args:
         soup (BeautifulSoup): The parsed HTML document.
@@ -366,7 +366,7 @@ def strip_paragraph_newlines(soup: BeautifulSoup) -> BeautifulSoup:
 
 def ensure_nonempty_paragraphs(soup: BeautifulSoup) -> BeautifulSoup:
     """
-    Ensures that empty or whitespace-only paragraphs contain a non-breaking space (\&nbsp;).
+    Ensures that empty or whitespace-only paragraphs contain a non-breaking space (\\&nbsp;).
 
     Args:
         soup (BeautifulSoup): The parsed HTML document.
@@ -388,13 +388,13 @@ def ensure_nonempty_paragraphs(soup: BeautifulSoup) -> BeautifulSoup:
 
 def get_cleaned_body_html(soup: BeautifulSoup) -> str:
     """
-    Extracts and unescapes the cleaned contents of the \<body> tag.
+    Extracts and unescapes the cleaned contents of the \\<body> tag.
 
     Args:
         soup (BeautifulSoup): The parsed HTML document.
 
     Returns:
-        str: Unescaped HTML string from within \<body>.
+        str: Unescaped HTML string from within \\<body>.
     """
     body = soup.find("body")
     body_html = body.decode_contents(formatter="html")

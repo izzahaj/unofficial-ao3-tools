@@ -32,7 +32,7 @@ def is_gdoc_html(html: str) -> bool:
     Determines whether a given HTML string is likely exported from Google Docs.
 
     The function checks two main criteria:
-        1. The \<body> tag has a class that includes 'doc-content'.
+        1. The \\<body> tag has a class that includes 'doc-content'.
         2. There are elements in the HTML with class names matching the 'c' + digits pattern (e.g., 'c1', 'c23').
 
     Args:
