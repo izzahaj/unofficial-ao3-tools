@@ -1,10 +1,11 @@
 import html
 import os
-from bs4 import BeautifulSoup
+from typing import Dict, List, Optional, Tuple
+
 import cssutils
 import utils
+from bs4 import BeautifulSoup, NavigableString
 from constants import SEMANTIC_TAGS
-from typing import Tuple, Dict, List, Optional
 
 
 def clean(html_str: str) -> str:
@@ -354,7 +355,9 @@ def strip_paragraph_newlines(soup: BeautifulSoup) -> BeautifulSoup:
 
     for p in soup.find_all("p"):
         text_nodes = [
-            descendant for descendant in p.descendants if isinstance(descendant, str)
+            descendant
+            for descendant in p.descendants
+            if isinstance(descendant, NavigableString)
         ]
 
         for text in text_nodes:
@@ -381,7 +384,7 @@ def ensure_nonempty_paragraphs(soup: BeautifulSoup) -> BeautifulSoup:
         ):
             # clear existing contents just to be safe
             p.clear()
-            p.append("\u00A0")
+            p.append("\u00a0")
 
     return soup
 

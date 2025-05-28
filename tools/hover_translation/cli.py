@@ -1,8 +1,9 @@
 import os
-import zipfile
 import tkinter as tk
-import generator
+import zipfile
 from tkinter import filedialog, messagebox
+
+import generator
 
 
 def select_html_file() -> tuple[str, str]:

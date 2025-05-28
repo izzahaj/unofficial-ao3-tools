@@ -1,7 +1,8 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
-from .schemas import CleanHTMLSchema, CleanHTMLFileSchema
+
 from .exceptions import InvalidGoogleDocsHTML, InvalidHTMLFile
+from .schemas import CleanHTMLFileSchema, CleanHTMLSchema
 from .service import clean_html, clean_html_from_file
 
 cleaner_bp = Blueprint("gdoc_html_cleaner", __name__)

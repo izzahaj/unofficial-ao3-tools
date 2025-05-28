@@ -1,12 +1,14 @@
 import html
 import os
 from typing import Dict, List, Optional, Tuple
-from bs4 import BeautifulSoup
+
 import cssutils
-from .constants import SEMANTIC_TAGS
-from . import utils
-from .exceptions import InvalidGoogleDocsHTML, InvalidHTMLFile
+from bs4 import BeautifulSoup, NavigableString
 from werkzeug.datastructures import FileStorage
+
+from . import utils
+from .constants import SEMANTIC_TAGS
+from .exceptions import InvalidGoogleDocsHTML, InvalidHTMLFile
 
 
 def clean_html_from_file(file: FileStorage) -> str:
@@ -386,7 +388,9 @@ def strip_paragraph_newlines(soup: BeautifulSoup) -> BeautifulSoup:
 
     for p in soup.find_all("p"):
         text_nodes = [
-            descendant for descendant in p.descendants if isinstance(descendant, str)
+            descendant
+            for descendant in p.descendants
+            if isinstance(descendant, NavigableString)
         ]
 
         for text in text_nodes:
@@ -413,7 +417,7 @@ def ensure_nonempty_paragraphs(soup: BeautifulSoup) -> BeautifulSoup:
         ):
             # clear existing contents just to be safe
             p.clear()
-            p.append("\u00A0")
+            p.append("\u00a0")
 
     return soup
 

@@ -1,6 +1,6 @@
+from config import DevConfig
 from flask import Flask
 from flask_cors import CORS
-from config import DevConfig
 
 
 def create_app(config_class=DevConfig):

@@ -1,7 +1,8 @@
 import os
+from typing import List, Match, Tuple
+
 import utils
 from constants import ANCHOR_TEMPLATE, CLASS_TEMPLATE, CSS_TEMPLATE, TRANSLATION_PATTERN
-from typing import List, Tuple, Match
 
 
 def generate_translations(html: str, chapter: int) -> Tuple[str, str]:
