@@ -1,10 +1,6 @@
-from marshmallow import Schema, ValidationError, fields
+from marshmallow import Schema, fields
 
-
-def not_empty_html(value: str):
-    if not value.strip():
-        raise ValidationError("HTML content cannot be empty.")
-
+from ..commons.utils import not_empty_html
 
 class CleanHTMLSchema(Schema):
     html = fields.String(required=True, validate=not_empty_html)

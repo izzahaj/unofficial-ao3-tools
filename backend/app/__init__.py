@@ -12,8 +12,10 @@ def create_app(config_class=DevConfig):
     CORS(app)
 
     # register blueprints
-    from app.gdoc_html_cleaner.controller import cleaner_bp
+    from app.gdoc_html_cleaner.controller import gdoc_html_cleaner_bp
+    from app.hover_translation.controller import hover_translation_bp
 
-    app.register_blueprint(cleaner_bp)
+    app.register_blueprint(gdoc_html_cleaner_bp)
+    app.register_blueprint(hover_translation_bp)
 
     return app
