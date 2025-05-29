@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   backend:
-    build: .
+    build:
+      context: .
+      target: dev
     image: izzahaj/unofficial-ao3-tools/backend:latest
     container_name: backend
     ports:

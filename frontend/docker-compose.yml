@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      target: dev
+    image: izzahaj/unofficial-ao3-tools/frontend:latest
+    container_name: frontend
+    ports:
+      - 3000:3000
+    environment:
+      - NODE_ENV=development
