@@ -9,6 +9,10 @@
     "prepare": "husky"
   },
   "lint-staged": {
+     "**/*.{js,jsx,ts,tsx}": [
+      "cd frontend && npx eslint --fix",
+      "cd frontend && npx prettier --write"
+    ],
     "**/*.py": [
       "cd backend && . .venv/bin/activate && ruff check --fix",
       "cd backend && . .venv/bin/activate && ruff format",
