@@ -5,7 +5,7 @@ RESET="\033[0m"
 
 check_branch_name() {
   BRANCH_NAME=$(git symbolic-ref --short HEAD)
-  REGEX="^(feature|bugfix|docs|chore)\/[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$"
+  REGEX="^(feature|bugfix|docs|chore|test)\/[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$"
 
   if ! echo "$BRANCH_NAME" | grep -Eq "$REGEX"; then
     echo ""
