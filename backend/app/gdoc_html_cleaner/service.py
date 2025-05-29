@@ -8,8 +8,9 @@ from werkzeug.datastructures import FileStorage
 
 from . import utils
 from .constants import SEMANTIC_TAGS
-from .exceptions import InvalidGoogleDocsHTML, InvalidHTMLFile
+from .exceptions import InvalidGoogleDocsHTML
 
+from ..commons.utils import read_uploaded_html_file
 
 def clean_html_from_file(file: FileStorage) -> str:
     """
@@ -20,18 +21,8 @@ def clean_html_from_file(file: FileStorage) -> str:
 
     Returns:
         str: Cleaned and simplified HTML string.
-
-    Raises:
-        InvalidGoogleDocsHTML: If the content is not recognized as Google Docs HTML.
-        Exception: If file reading fails or content is invalid.
     """
-    try:
-        html = file.read().decode("utf-8")
-    except Exception:
-        raise InvalidHTMLFile(
-            "Unable to read the uploaded file. Please check that it's a valid HTML file."
-        )
-
+    html = read_uploaded_html_file(file)
     return clean_html(html)
 
 
