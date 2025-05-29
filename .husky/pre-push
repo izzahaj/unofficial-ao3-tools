@@ -1,0 +1,33 @@
+RED="\033[31m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+RESET="\033[0m"
+
+check_branch_name() {
+  BRANCH_NAME=$(git symbolic-ref --short HEAD)
+  REGEX="^(feature|bugfix|docs|chore)\/[a-zA-Z0-9]+(-[a-zA-Z0-9]+)*$"
+
+  if ! echo "$BRANCH_NAME" | grep -Eq "$REGEX"; then
+    echo ""
+    echo -e "${RED} Invalid branch name: ${RESET}'$BRANCH_NAME'"
+    echo ""
+    echo "Your branch name must follow this pattern:"
+    echo -e "  ${YELLOW}<type>/<description>${RESET}"
+    echo ""
+    echo -e "Where ${YELLOW}<type>${RESET} is one of: feature, bugfix, docs, chore"
+    echo -e "and ${YELLOW}<description>${RESET} is lowercase letters, numbers, and hyphens only."
+    echo ""
+    echo "Examples of valid branch names:"
+    echo "  feature/add-login"
+    echo "  bugfix/123-fix-null-error"
+    echo "  docs/update-readme"
+    echo "  chore/dependency-bump"
+    echo ""
+    echo "Please rename your branch and try pushing again."
+    exit 1
+  fi
+
+  echo -e "${GREEN}Branch name '$BRANCH_NAME' looks good!"
+}
+
+check_branch_name

@@ -1,7 +1,6 @@
 import html
 import os
 from typing import Dict, List, Optional, Tuple
-
 import cssutils
 import utils
 from bs4 import BeautifulSoup, NavigableString
