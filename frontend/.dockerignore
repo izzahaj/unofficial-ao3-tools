@@ -53,4 +53,9 @@ venv/
 # VS Code
 .vscode/
 
+**/node_modules
+
 Makefile
+
+LICENSE
+README.md

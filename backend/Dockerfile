@@ -1,5 +1,7 @@
+ARG PYTHON_VERSION=3.13
+
 # Stage 1: Build dependencies
-FROM --platform=$BUILDPLATFORM python:3.13-alpine AS builder
+FROM --platform=$BUILDPLATFORM python:${PYTHON_VERSION}-alpine AS builder
 
 WORKDIR /app
 
@@ -11,7 +13,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 COPY . /app
 
 # Stage 2: Development environment setup
-FROM python:3.13-alpine AS dev
+FROM python:${PYTHON_VERSION}-alpine AS dev
 
 WORKDIR /app
 
@@ -34,7 +36,7 @@ EXPOSE 5000
 CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
 
 # Stage 3: Production-ready image
-FROM python:3.13-alpine AS prod
+FROM python:${PYTHON_VERSION}-alpine AS prod
 
 WORKDIR /app
 
