@@ -9,13 +9,13 @@ check_branch_name() {
 
   if ! echo "$BRANCH_NAME" | grep -Eq "$REGEX"; then
     echo ""
-    echo -e "${RED} Invalid branch name: ${RESET}'$BRANCH_NAME'"
+    echo "${RED} Invalid branch name: ${RESET}'$BRANCH_NAME'"
     echo ""
     echo "Your branch name must follow this pattern:"
-    echo -e "  ${YELLOW}<type>/<description>${RESET}"
+    echo "  ${YELLOW}<type>/<description>${RESET}"
     echo ""
-    echo -e "Where ${YELLOW}<type>${RESET} is one of: feature, bugfix, docs, chore"
-    echo -e "and ${YELLOW}<description>${RESET} is lowercase letters, numbers, and hyphens only."
+    echo "Where ${YELLOW}<type>${RESET} is one of: feature, bugfix, docs, chore"
+    echo "and ${YELLOW}<description>${RESET} is lowercase letters, numbers, and hyphens only."
     echo ""
     echo "Examples of valid branch names:"
     echo "  feature/add-login"
@@ -27,7 +27,7 @@ check_branch_name() {
     exit 1
   fi
 
-  echo -e "${GREEN}Branch name '$BRANCH_NAME' looks good!"
+  echo "${GREEN}Branch name '$BRANCH_NAME' looks good!"
 }
 
 check_branch_name
