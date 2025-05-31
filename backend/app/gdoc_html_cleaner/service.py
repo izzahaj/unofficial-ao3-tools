@@ -425,4 +425,5 @@ def get_cleaned_body_html(soup: BeautifulSoup) -> str:
     """
     body = soup.find("body")
     body_html = body.decode_contents(formatter="html")
-    return html.unescape(body_html)
+    prettified_html = BeautifulSoup(body_html, features="html.parser", preserve_whitespace_tags=["p"]).prettify()
+    return html.unescape(prettified_html)

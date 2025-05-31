@@ -20,7 +20,7 @@ def clean(html_str: str) -> str:
     Returns:
         str: A cleaned and simplified HTML string.
     """
-    soup = BeautifulSoup(html_str, "html.parser")
+    soup = BeautifulSoup(html_str, features="html.parser")
     class_align_map, class_style_map = extract_styles(soup)
     soup = apply_transformations(soup, class_align_map, class_style_map)
     return get_cleaned_body_html(soup)
@@ -400,4 +400,5 @@ def get_cleaned_body_html(soup: BeautifulSoup) -> str:
     """
     body = soup.find("body")
     body_html = body.decode_contents(formatter="html")
-    return html.unescape(body_html)
+    prettified_html = BeautifulSoup(body_html, features="html.parser", preserve_whitespace_tags=["p"]).prettify()
+    return html.unescape(prettified_html)
