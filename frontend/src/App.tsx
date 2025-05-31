@@ -1,7 +1,10 @@
-import { Route, Routes } from 'react-router'
 import './App.css'
-import { GoogleDocsHtmlCleanerPage, HomePage } from './pages'
-import { MainLayout } from './common/layout'
+
+import { Route, Routes } from 'react-router'
+
+import MainLayout from './common/layout/MainLayout'
+import GoogleDocsHtmlCleanerPage from './pages/GoogleDocsHtmlCleanerPage'
+import HomePage from './pages/HomePage'
 
 function App() {
   return (

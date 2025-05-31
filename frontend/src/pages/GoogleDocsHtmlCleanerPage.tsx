@@ -1,8 +1,11 @@
-import { useState } from "react";
-import { TabPanel } from "../common/components";
-import { EditorTabLabel, FileUploadTabLabel, HtmlEditor } from "../features/HtmlCleaner/components";
-import { Box, Button, List, ListItem, Stack, styled, Tab, Tabs, Typography } from "@mui/material";
 import { Clear, CloudUpload, ContentCopy, Download } from "@mui/icons-material";
+import { Box, Button, List, ListItem, Stack, styled,Tab, Tabs, Typography } from "@mui/material";
+import { useState } from "react";
+
+import TabPanel from "../common/components/TabPanel";
+import EditorTabLabel from "../features/HtmlCleaner/components/EditorTabLabel";
+import FileUploadTabLabel from "../features/HtmlCleaner/components/FileUploadTabLabel";
+import HtmlEditor from "../features/HtmlCleaner/components/HtmlEditor";
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
