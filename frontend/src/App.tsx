@@ -1,12 +1,12 @@
-import './App.css'
+import "./App.css";
 
-import { Route, Routes } from 'react-router'
+import { Route, Routes } from "react-router";
 
-import MainLayout from './common/layout/MainLayout'
-import GoogleDocsHtmlCleanerPage from './pages/GoogleDocsHtmlCleanerPage'
-import HomePage from './pages/HomePage'
+import MainLayout from "./common/layout/MainLayout";
+import GoogleDocsHtmlCleanerPage from "./pages/GoogleDocsHtmlCleanerPage";
+import HomePage from "./pages/HomePage";
 
-function App() {
+function App () {
   return (
     <>
       <Routes>
@@ -16,7 +16,7 @@ function App() {
         </Route>
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

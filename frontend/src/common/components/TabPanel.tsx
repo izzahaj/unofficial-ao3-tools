@@ -4,7 +4,7 @@ type TabPanelProps = BoxProps & {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
+};
 
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, index, ...other } = props;
@@ -17,7 +17,7 @@ const TabPanel = (props: TabPanelProps) => {
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
 export default TabPanel;

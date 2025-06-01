@@ -1,5 +1,5 @@
-import Editor from '@monaco-editor/react';
-import { Skeleton } from '@mui/material';
+import Editor from "@monaco-editor/react";
+import { Skeleton } from "@mui/material";
 
 const HtmlEditor = ({ readOnly = false }) => {
   const options = {
@@ -24,7 +24,7 @@ const HtmlEditor = ({ readOnly = false }) => {
       theme="vs-dark"
       loading={<Skeleton variant="rectangular" height="100%" />}
     />
-  )
-}
+  );
+};
 
 export default HtmlEditor;
