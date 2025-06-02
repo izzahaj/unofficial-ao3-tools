@@ -1,4 +1,3 @@
-import { Download } from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
@@ -15,6 +14,7 @@ import { useState } from "react";
 
 import ClearEditorButton from "../common/components/ClearEditorButton";
 import CopyButton from "../common/components/CopyButton";
+import DownloadButton from "../common/components/DownloadButton";
 import FileUploadButton from "../common/components/FileUploadButton";
 import TabPanel from "../common/components/TabPanel";
 import {
@@ -89,6 +89,7 @@ const GoogleDocsHtmlCleanerPage = () => {
 
   const handleClean = async (_event: React.MouseEvent<HTMLButtonElement>) => {
     resetAlerts();
+    setCleanedHtml("");
 
     try {
       let cleaned: string;
@@ -243,9 +244,13 @@ const GoogleDocsHtmlCleanerPage = () => {
                 size="small"
                 textToCopy={cleanedHtml}
               />
-              <Button variant="contained" size="small" startIcon={<Download />}>
-                Download
-              </Button>
+              <DownloadButton
+                variant="contained"
+                size="small"
+                content={cleanedHtml}
+                fileName="cleaned.html"
+                mimeType="text/html"
+              />
             </Stack>
           </Stack>
           <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
