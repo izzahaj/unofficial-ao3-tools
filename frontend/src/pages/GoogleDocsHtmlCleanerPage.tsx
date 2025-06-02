@@ -215,7 +215,7 @@ const GoogleDocsHtmlCleanerPage = () => {
             variant="standard"
             onClose={() => setOpenSuccessAlert(false)}
           >
-            HTML Cleaned successfully!
+            HTML cleaned successfully!
           </Alert>
         )}
         {openErrorAlert && (
