@@ -1,4 +1,4 @@
-import { Clear, CloudUpload, Download } from "@mui/icons-material";
+import { CloudUpload, Download } from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
@@ -16,6 +16,7 @@ import axios from "axios";
 import type { editor } from "monaco-editor";
 import { useState } from "react";
 
+import ClearEditorButton from "../common/components/ClearEditorButton";
 import CopyButton from "../common/components/CopyButton";
 import TabPanel from "../common/components/TabPanel";
 import {
@@ -172,14 +173,11 @@ const GoogleDocsHtmlCleanerPage = () => {
                     size="small"
                     textToCopy={editorContent}
                   />
-                  <Button
+                  <ClearEditorButton
                     variant="contained"
                     size="small"
-                    color="error"
-                    startIcon={<Clear />}
-                  >
-                    Clear
-                  </Button>
+                    setValue={setEditorContent}
+                  />
                 </Stack>
               </Stack>
               <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
