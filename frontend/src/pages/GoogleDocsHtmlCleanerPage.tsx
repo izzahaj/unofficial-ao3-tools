@@ -1,4 +1,4 @@
-import { Clear, CloudUpload, Download } from "@mui/icons-material";
+import { CloudUpload, Download } from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
