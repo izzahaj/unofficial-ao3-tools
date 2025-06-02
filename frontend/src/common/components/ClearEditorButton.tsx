@@ -3,6 +3,7 @@ import { Button, type ButtonProps } from "@mui/material";
 
 type ClearEditorButtonProps = ButtonProps & {
   setValue: (value: React.SetStateAction<string>) => void;
+  children?: React.ReactNode;
 };
 
 const ClearEditorButton: React.FC<ClearEditorButtonProps> = (props) => {

@@ -1,4 +1,4 @@
-import { CloudUpload, Download } from "@mui/icons-material";
+import { Download } from "@mui/icons-material";
 import {
   Alert,
   AlertTitle,
@@ -7,7 +7,6 @@ import {
   List,
   ListItem,
   Stack,
-  styled,
   Tab,
   Tabs,
   Typography,
@@ -18,6 +17,7 @@ import { useState } from "react";
 
 import ClearEditorButton from "../common/components/ClearEditorButton";
 import CopyButton from "../common/components/CopyButton";
+import FileUploadButton from "../common/components/FileUploadButton";
 import TabPanel from "../common/components/TabPanel";
 import {
   HTML_CLEANER_SVC_CLEAN_FILE_URI,
@@ -26,18 +26,6 @@ import {
 import EditorTabLabel from "../features/HtmlCleaner/components/EditorTabLabel";
 import FileUploadTabLabel from "../features/HtmlCleaner/components/FileUploadTabLabel";
 import HtmlEditor from "../features/HtmlCleaner/components/HtmlEditor";
-
-const VisuallyHiddenInput = styled("input")({
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: 1,
-  overflow: "hidden",
-  position: "absolute",
-  bottom: 0,
-  left: 0,
-  whiteSpace: "nowrap",
-  width: 1,
-});
 
 const GoogleDocsHtmlCleanerPage = () => {
   const [tabValue, setTabValue] = useState("editor");
@@ -124,6 +112,10 @@ const GoogleDocsHtmlCleanerPage = () => {
         } else {
           setErrorMessage("Something went wrong! Please try again later.");
         }
+      } else if (err instanceof Error) {
+        // TODO: Come up with a better way to catch no file uploaded error
+        // perhaps with react hook form + yup validation?
+        setErrorMessage(err.message);
       } else {
         setErrorMessage("Something went wrong! Please try again later.");
       }
@@ -197,36 +189,12 @@ const GoogleDocsHtmlCleanerPage = () => {
               <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
                 Upload a HTML file exported from Google Docs
               </Typography>
-              <Stack
-                columnGap={1}
-                direction="row"
-                sx={{ alignItems: "center" }}
-              >
-                <Button
-                  component="label"
-                  role={undefined}
-                  variant="contained"
-                  tabIndex={-1}
-                  startIcon={<CloudUpload />}
-                  size="small"
-                >
-                  Choose file
-                  <VisuallyHiddenInput
-                    type="file"
-                    accept=".html"
-                    onChange={handleFileUpload}
-                    multiple
-                  />
-                </Button>
-                <Box
-                  flex={1}
-                  textOverflow="ellipsis"
-                  overflow="hidden"
-                  whiteSpace="nowrap"
-                >
-                  {uploadedFile?.name || "No file chosen"}
-                </Box>
-              </Stack>
+              <FileUploadButton
+                variant="contained"
+                size="small"
+                accept=".html"
+                onFileSelect={handleFileUpload}
+              />
             </Stack>
           </TabPanel>
         </Stack>
