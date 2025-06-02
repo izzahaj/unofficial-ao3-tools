@@ -3,6 +3,7 @@ import { Button, type ButtonProps } from "@mui/material";
 
 type CopyButtonProps = ButtonProps & {
   textToCopy: string;
+  children?: React.ReactNode;
 };
 
 const CopyButton: React.FC<CopyButtonProps> = (props) => {
