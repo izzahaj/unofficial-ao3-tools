@@ -1,11 +1,14 @@
 import { Clear, CloudUpload, ContentCopy, Download } from "@mui/icons-material";
-import { Box, Button, List, ListItem, Stack, styled, Tab, Tabs, Typography } from "@mui/material";
+import { Alert, AlertTitle, Box, Button, List, ListItem, Stack, styled, Tab, Tabs, Typography } from "@mui/material";
 import { useState } from "react";
 
 import TabPanel from "../common/components/TabPanel";
 import EditorTabLabel from "../features/HtmlCleaner/components/EditorTabLabel";
 import FileUploadTabLabel from "../features/HtmlCleaner/components/FileUploadTabLabel";
 import HtmlEditor from "../features/HtmlCleaner/components/HtmlEditor";
+import axios from "axios";
+import { HTML_CLEANER_SVC_CLEAN_FILE_URI, HTML_CLEANER_SVC_CLEAN_URI } from "../config/uris";
+import type { editor } from "monaco-editor";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,17 +23,96 @@ const VisuallyHiddenInput = styled("input")({
 });
 
 const GoogleDocsHtmlCleanerPage = () => {
-  const [value, setValue] = useState(0);
+  const [tabValue, setTabValue] = useState("editor");
   const [uploadedFile, setUploadedFile] = useState<File>();
+  const [editorContent, setEditorContent] = useState("");
+  const [cleanedHtml, setCleanedHtml] = useState("");
+  const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
+  const [openErrorAlert, setOpenErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const handleEditorChange = (value: string | undefined, _event: editor.IModelContentChangedEvent) => {
+    setEditorContent(value || "");
+  }
+
+  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+    setTabValue(newValue);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(event.target.files);
     setUploadedFile(event.target.files?.[0]);
   };
+
+  const resetAlerts = () => {
+    setOpenSuccessAlert(false)
+    setOpenErrorAlert(false)
+    setErrorMessage("")
+  }
+
+  const handleCleanHtmlString = async () => {
+    const url = HTML_CLEANER_SVC_CLEAN_URI;
+    const config = {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+    const data = { html: editorContent };
+
+    const response = await axios.post(url, data, config);
+    return response.data.cleanedHtml;
+  };
+
+  const handleCleanFile = async () => {
+    if (!uploadedFile) {
+      throw new Error("No file selected. Please upload a file first.")
+    }
+
+    const url = HTML_CLEANER_SVC_CLEAN_FILE_URI;
+    const formData = new FormData();
+    formData.append("file", uploadedFile);
+
+    const response = await axios.post(url, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    return response.data.cleanedHtml;
+  };
+
+
+  const handleClean = async (_event: React.MouseEvent<HTMLButtonElement>) => {
+    resetAlerts()
+
+    try {
+      let cleaned: string;
+
+      if (tabValue === "editor") {
+        cleaned = await handleCleanHtmlString();
+      } else {
+        cleaned = await handleCleanFile();
+      }
+
+      setCleanedHtml(cleaned)
+      setOpenSuccessAlert(true);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const errMessage = err.response?.data.error
+        const status = err.response?.status
+
+        if (status === 400) {
+          setErrorMessage(errMessage);
+        } else {
+          setErrorMessage("Something went wrong! Please try again later.")
+        }
+      } else {
+        setErrorMessage("Something went wrong! Please try again later.")
+      }
+      console.error(err)
+      setOpenErrorAlert(true);
+    }
+  }
 
   return (
     <>
@@ -41,16 +123,16 @@ const GoogleDocsHtmlCleanerPage = () => {
         <Stack>
           <Box>
             <Tabs
-              value={value}
+              value={tabValue}
               onChange={handleChange}
               textColor="secondary"
               indicatorColor="secondary"
             >
-              <Tab label={<EditorTabLabel />} />
-              <Tab label={<FileUploadTabLabel />} />
+              <Tab value="editor" label={<EditorTabLabel />} />
+              <Tab value="upload" label={<FileUploadTabLabel />} />
             </Tabs>
           </Box>
-          <TabPanel value={value} index={0} sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+          <TabPanel value={tabValue} name="editor" sx={{ p: 2, display: "flex", flexDirection: "column" }}>
             <Stack rowGap={1} sx={{ flex: 1, minHeight: "75vh" }}>
               <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between">
                 <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
@@ -66,11 +148,11 @@ const GoogleDocsHtmlCleanerPage = () => {
                 </Stack>
               </Stack>
               <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-                <HtmlEditor />
+                <HtmlEditor value={editorContent} onChange={handleEditorChange} />
               </Box>
             </Stack>
           </TabPanel>
-          <TabPanel value={value} index={1} sx={{ p: 2, display: "flex", flexDirection: "column" }}>
+          <TabPanel value={tabValue} name="upload" sx={{ p: 2, display: "flex", flexDirection: "column" }}>
             <Stack rowGap={1} sx={{ flex: 1 }}>
               <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
                 Upload a HTML file exported from Google Docs
@@ -100,8 +182,29 @@ const GoogleDocsHtmlCleanerPage = () => {
           </TabPanel>
         </Stack>
         <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Button variant="contained" color="secondary">Clean</Button>
+          <Button variant="contained" color="secondary" onClick={handleClean}>Clean</Button>
         </Box>
+        {openSuccessAlert &&
+          <Alert
+            severity="success"
+            color="success"
+            variant="standard"
+            onClose={() => setOpenSuccessAlert(false)}
+          >
+            HTML Cleaned successfully!
+          </Alert>
+        }
+        {openErrorAlert &&
+          <Alert
+            severity="error"
+            color="error"
+            variant="standard"
+            onClose={() => setOpenErrorAlert(false)}
+          >
+            <AlertTitle>Error</AlertTitle>
+            {errorMessage}
+          </Alert>
+        }
         <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
           <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between">
             <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">Result</Typography>
@@ -115,7 +218,7 @@ const GoogleDocsHtmlCleanerPage = () => {
             </Stack>
           </Stack>
           <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-            <HtmlEditor readOnly={true} />
+            <HtmlEditor readOnly={true} value={cleanedHtml} />
           </Box>
         </Stack>
         <Stack rowGap={1}>

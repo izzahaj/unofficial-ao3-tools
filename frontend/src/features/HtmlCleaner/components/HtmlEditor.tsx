@@ -1,7 +1,13 @@
-import Editor from "@monaco-editor/react";
+import Editor, { type OnChange } from "@monaco-editor/react";
 import { Skeleton } from "@mui/material";
 
-const HtmlEditor = ({ readOnly = false }) => {
+type HtmlEditorProps = {
+  readOnly?: boolean,
+  value: string,
+  onChange?: OnChange
+}
+
+const HtmlEditor: React.FC<HtmlEditorProps> = ({ readOnly = false, value, onChange }) => {
   const options = {
     scrollBeyondLastLine: false,
     fontSize: 14,
@@ -23,6 +29,8 @@ const HtmlEditor = ({ readOnly = false }) => {
       height="100%"
       theme="vs-dark"
       loading={<Skeleton variant="rectangular" height="100%" />}
+      value={value}
+      onChange={onChange}
     />
   );
 };

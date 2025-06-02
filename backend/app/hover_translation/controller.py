@@ -6,8 +6,8 @@ from ..commons.exceptions import InvalidHTMLFile
 from .service import generate_translations, generate_translations_from_file
 
 hover_translation_bp = Blueprint("hover_translation", __name__)
-hover_translation_schema = HoverTranslationSchema
-hover_translation_file_schema = HoverTranslationFileSchema
+hover_translation_schema = HoverTranslationSchema()
+hover_translation_file_schema = HoverTranslationFileSchema()
 
 
 @hover_translation_bp.route("/generate", methods=["POST"])
@@ -15,7 +15,8 @@ def generate_from_text():
     try:
         data = hover_translation_schema.load(request.get_json())
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        first_error = next(iter(err.messages.values()))[0]
+        return jsonify({"error": first_error}), 400
     
     html = data.get("html")
     chapter = data.get("chapter")
@@ -35,7 +36,8 @@ def generate_from_file():
     try:
         data = hover_translation_file_schema.load(request.files)
     except ValidationError as err:
-        return jsonify({"error": err.messages}), 400
+        first_error = next(iter(err.messages.values()))[0]
+        return jsonify({"error": first_error}), 400
     
     uploaded_file = data.get("file")
     chapter = data.get("chapter")
