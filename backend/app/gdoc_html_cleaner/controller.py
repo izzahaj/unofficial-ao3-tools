@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
+
 from ..commons.exceptions import InvalidHTMLFile
 from .exceptions import InvalidGoogleDocsHTML
 from .schemas import CleanHTMLFileSchema, CleanHTMLSchema

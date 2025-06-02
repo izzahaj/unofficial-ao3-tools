@@ -2,10 +2,10 @@ import Editor, { type OnChange } from "@monaco-editor/react";
 import { Skeleton } from "@mui/material";
 
 type HtmlEditorProps = {
-  readOnly?: boolean,
-  value: string,
-  onChange?: OnChange
-}
+  readOnly?: boolean;
+  value: string;
+  onChange?: OnChange;
+};
 
 const HtmlEditor: React.FC<HtmlEditorProps> = ({ readOnly = false, value, onChange }) => {
   const options = {
