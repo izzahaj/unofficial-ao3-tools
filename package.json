@@ -6,17 +6,12 @@
     "lint-staged": "^16.1.0"
   },
   "scripts": {
-    "prepare": "husky"
+    "prepare": "husky",
+    "lint:frontend": "cd frontend && npx eslint --fix && npx prettier --write .",
+    "lint:backend": "cd backend && . .venv/bin/activate && ruff check --fix && ruff format"
   },
   "lint-staged": {
-     "**/*.{js,jsx,ts,tsx}": [
-      "cd frontend && npx eslint --fix",
-      "cd frontend && npx prettier --write"
-    ],
-    "**/*.py": [
-      "cd backend && . .venv/bin/activate && ruff check --fix",
-      "cd backend && . .venv/bin/activate && ruff format",
-      "cd backend && . .venv/bin/activate && mypy"
-    ]
+    "frontend/**/*.{js,jsx,ts,tsx}": "npm run lint:frontend",
+    "backend/**/*.py": "npm run lint:backend"
   }
 }

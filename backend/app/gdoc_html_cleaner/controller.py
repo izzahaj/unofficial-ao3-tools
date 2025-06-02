@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
-
 from ..commons.exceptions import InvalidHTMLFile
 from .exceptions import InvalidGoogleDocsHTML
 from .schemas import CleanHTMLFileSchema, CleanHTMLSchema
@@ -32,7 +31,7 @@ def clean_from_text():
 
 
 @gdoc_html_cleaner_bp.route("/clean-file", methods=["POST"])
-def clean_from_file():    
+def clean_from_file():
     try:
         data = clean_html_file_schema.load(request.files)
     except ValidationError as err:

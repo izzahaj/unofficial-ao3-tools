@@ -12,6 +12,7 @@ from .exceptions import InvalidGoogleDocsHTML
 
 from ..commons.utils import read_uploaded_html_file
 
+
 def clean_html_from_file(file: FileStorage) -> str:
     """
     Cleans an uploaded HTML file exported from Google Docs.
@@ -425,5 +426,7 @@ def get_cleaned_body_html(soup: BeautifulSoup) -> str:
     """
     body = soup.find("body")
     body_html = body.decode_contents(formatter="html")
-    prettified_html = BeautifulSoup(body_html, features="html.parser", preserve_whitespace_tags=["p"]).prettify()
+    prettified_html = BeautifulSoup(
+        body_html, features="html.parser", preserve_whitespace_tags=["p"]
+    ).prettify()
     return html.unescape(prettified_html)
