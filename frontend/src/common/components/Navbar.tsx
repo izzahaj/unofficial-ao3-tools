@@ -8,11 +8,8 @@ const Navbar = () => {
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Unofficial Tools
         </Typography>
-        <IconButton
-          size="large"
-          edge="end"
-        >
-          <Menu/>
+        <IconButton size="large" edge="end">
+          <Menu />
         </IconButton>
       </Toolbar>
     </AppBar>

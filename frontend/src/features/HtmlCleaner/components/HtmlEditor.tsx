@@ -7,7 +7,11 @@ type HtmlEditorProps = {
   onChange?: OnChange;
 };
 
-const HtmlEditor: React.FC<HtmlEditorProps> = ({ readOnly = false, value, onChange }) => {
+const HtmlEditor: React.FC<HtmlEditorProps> = ({
+  readOnly = false,
+  value,
+  onChange,
+}) => {
   const options = {
     scrollBeyondLastLine: false,
     fontSize: 14,
