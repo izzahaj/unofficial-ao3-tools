@@ -2,22 +2,22 @@ import { Box, type BoxProps } from "@mui/material";
 
 type TabPanelProps = BoxProps & {
   children?: React.ReactNode;
-  index: number;
-  value: number;
-}
+  name: string;
+  value: string;
+};
 
 const TabPanel = (props: TabPanelProps) => {
-  const { children, value, index, ...other } = props;
+  const { children, value, name, ...other } = props;
 
   return (
     <>
-      {value === index && (
+      {value === name && (
         <Box {...other}>
           {children}
         </Box>
       )}
     </>
-  )
-}
+  );
+};
 
 export default TabPanel;

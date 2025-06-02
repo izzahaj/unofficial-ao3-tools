@@ -8,6 +8,6 @@ const FileUploadTabLabel = () => {
       <Typography variant="body1">Upload</Typography>
     </Stack>
   );
-}
+};
 
 export default FileUploadTabLabel;

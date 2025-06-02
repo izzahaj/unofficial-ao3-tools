@@ -7,12 +7,12 @@ import Navbar from "../components/Navbar";
 const MainLayout = () => {
   return (
     <>
-      <Box width="100vw" height="100vh" display="flex" flexDirection='column'>
+      <Box width="100vw" height="100vh" display="flex" flexDirection="column">
         <Navbar />
         <Container
           maxWidth="lg"
           disableGutters
-          sx={{ display: 'flex', flexDirection: 'column', p: 2 }}
+          sx={{ display: "flex", flexDirection: "column", p: 2 }}
         >
           <Outlet />
         </Container>
@@ -20,6 +20,6 @@ const MainLayout = () => {
       </Box>
     </>
   );
-}
+};
 
 export default MainLayout;

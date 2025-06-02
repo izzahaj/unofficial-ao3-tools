@@ -27,7 +27,7 @@ check_branch_name() {
     exit 1
   fi
 
-  echo "${GREEN}Branch name '$BRANCH_NAME' looks good!"
+  echo "${GREEN}Branch name '$BRANCH_NAME' looks good!${RESET}"
 }
 
 check_branch_name

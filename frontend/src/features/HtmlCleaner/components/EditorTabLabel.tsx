@@ -8,6 +8,6 @@ const EditorTabLabel = () => {
       <Typography variant="body1">HTML Editor</Typography>
     </Stack>
   );
-}
+};
 
 export default EditorTabLabel;
