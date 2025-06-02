@@ -1,4 +1,3 @@
-
 from flask import Blueprint, jsonify, request
 from marshmallow import ValidationError
 from .schemas import HoverTranslationFileSchema, HoverTranslationSchema
@@ -17,7 +16,7 @@ def generate_from_text():
     except ValidationError as err:
         first_error = next(iter(err.messages.values()))[0]
         return jsonify({"error": first_error}), 400
-    
+
     html = data.get("html")
     chapter = data.get("chapter")
 
@@ -26,19 +25,17 @@ def generate_from_text():
     except Exception:
         return jsonify({"error": "Internal server error"}), 500
 
-    return jsonify({
-        "html": new_html,
-        "css": new_css
-    }), 200
+    return jsonify({"html": new_html, "css": new_css}), 200
 
-@hover_translation_bp.route("/generate-from-file", methods=["POST"])
+
+@hover_translation_bp.route("/generate-file", methods=["POST"])
 def generate_from_file():
     try:
         data = hover_translation_file_schema.load(request.files)
     except ValidationError as err:
         first_error = next(iter(err.messages.values()))[0]
         return jsonify({"error": first_error}), 400
-    
+
     uploaded_file = data.get("file")
     chapter = data.get("chapter")
 
@@ -48,8 +45,5 @@ def generate_from_file():
         return jsonify({"error": str(err)}), 400
     except Exception:
         return jsonify({"error": "Internal server error"}), 500
-    
-    return jsonify({
-        "html": new_html,
-        "css": new_css
-    }), 200
+
+    return jsonify({"html": new_html, "css": new_css}), 200
