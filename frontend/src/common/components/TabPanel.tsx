@@ -9,15 +9,7 @@ type TabPanelProps = BoxProps & {
 const TabPanel = (props: TabPanelProps) => {
   const { children, value, name, ...other } = props;
 
-  return (
-    <>
-      {value === name && (
-        <Box {...other}>
-          {children}
-        </Box>
-      )}
-    </>
-  );
+  return <>{value === name && <Box {...other}>{children}</Box>}</>;
 };
 
 export default TabPanel;

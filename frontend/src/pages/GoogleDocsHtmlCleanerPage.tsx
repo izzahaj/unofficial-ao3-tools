@@ -62,10 +62,6 @@ const GoogleDocsHtmlCleanerPage = () => {
     setUploadedFile(event.target.files?.[0]);
   };
 
-  const handleCopy = async (text: string) => {
-    await navigator.clipboard.writeText(text);
-  };
-
   const resetAlerts = () => {
     setOpenSuccessAlert(false);
     setOpenErrorAlert(false);

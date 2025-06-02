@@ -1,10 +1,5 @@
-
 const HomePage = () => {
-  return (
-    <>
-      Hello World
-    </>
-  );
+  return <>Hello World</>;
 };
 
 export default HomePage;
