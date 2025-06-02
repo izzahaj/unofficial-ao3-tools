@@ -1,13 +1,27 @@
-import { Clear, CloudUpload, ContentCopy, Download } from "@mui/icons-material";
+import { Clear, CloudUpload, Download } from "@mui/icons-material";
 import {
-  Alert, AlertTitle, Box, Button, List, ListItem, Stack, styled, Tab, Tabs, Typography,
+  Alert,
+  AlertTitle,
+  Box,
+  Button,
+  List,
+  ListItem,
+  Stack,
+  styled,
+  Tab,
+  Tabs,
+  Typography,
 } from "@mui/material";
 import axios from "axios";
 import type { editor } from "monaco-editor";
 import { useState } from "react";
 
+import CopyButton from "../common/components/CopyButton";
 import TabPanel from "../common/components/TabPanel";
-import { HTML_CLEANER_SVC_CLEAN_FILE_URI, HTML_CLEANER_SVC_CLEAN_URI } from "../config/uris";
+import {
+  HTML_CLEANER_SVC_CLEAN_FILE_URI,
+  HTML_CLEANER_SVC_CLEAN_URI,
+} from "../config/uris";
 import EditorTabLabel from "../features/HtmlCleaner/components/EditorTabLabel";
 import FileUploadTabLabel from "../features/HtmlCleaner/components/FileUploadTabLabel";
 import HtmlEditor from "../features/HtmlCleaner/components/HtmlEditor";
@@ -40,13 +54,16 @@ const GoogleDocsHtmlCleanerPage = () => {
     setEditorContent(value || "");
   };
 
-  const handleChange = (_event: React.SyntheticEvent, newValue: string) => {
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setTabValue(newValue);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.files);
     setUploadedFile(event.target.files?.[0]);
+  };
+
+  const handleCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
   };
 
   const resetAlerts = () => {
@@ -85,7 +102,6 @@ const GoogleDocsHtmlCleanerPage = () => {
 
     return response.data.cleanedHtml;
   };
-
 
   const handleClean = async (_event: React.MouseEvent<HTMLButtonElement>) => {
     resetAlerts();
@@ -129,7 +145,7 @@ const GoogleDocsHtmlCleanerPage = () => {
           <Box>
             <Tabs
               value={tabValue}
-              onChange={handleChange}
+              onChange={handleTabChange}
               textColor="secondary"
               indicatorColor="secondary"
             >
@@ -143,21 +159,38 @@ const GoogleDocsHtmlCleanerPage = () => {
             sx={{ p: 2, display: "flex", flexDirection: "column" }}
           >
             <Stack rowGap={1} sx={{ flex: 1, minHeight: "75vh" }}>
-              <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between">
-                <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                justifyContent="space-between"
+              >
+                <Typography
+                  variant="h6"
+                  fontWeight="bold"
+                  alignSelf="flex-start"
+                >
                   Type or paste HTML into the editor
                 </Typography>
                 <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
-                  <Button variant="contained" size="small" startIcon={<ContentCopy />}>
-                    Copy
-                  </Button>
-                  <Button variant="contained" size="small" color="error" startIcon={<Clear />}>
+                  <CopyButton
+                    variant="contained"
+                    size="small"
+                    textToCopy={editorContent}
+                  />
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="error"
+                    startIcon={<Clear />}
+                  >
                     Clear
                   </Button>
                 </Stack>
               </Stack>
               <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-                <HtmlEditor value={editorContent} onChange={handleEditorChange} />
+                <HtmlEditor
+                  value={editorContent}
+                  onChange={handleEditorChange}
+                />
               </Box>
             </Stack>
           </TabPanel>
@@ -170,7 +203,11 @@ const GoogleDocsHtmlCleanerPage = () => {
               <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
                 Upload a HTML file exported from Google Docs
               </Typography>
-              <Stack columnGap={1} direction="row" sx={{ alignItems: "center" }}>
+              <Stack
+                columnGap={1}
+                direction="row"
+                sx={{ alignItems: "center" }}
+              >
                 <Button
                   component="label"
                   role={undefined}
@@ -187,17 +224,30 @@ const GoogleDocsHtmlCleanerPage = () => {
                     multiple
                   />
                 </Button>
-                <Box flex={1} textOverflow="ellipsis" overflow="hidden" whiteSpace="nowrap">
+                <Box
+                  flex={1}
+                  textOverflow="ellipsis"
+                  overflow="hidden"
+                  whiteSpace="nowrap"
+                >
                   {uploadedFile?.name || "No file chosen"}
                 </Box>
               </Stack>
             </Stack>
           </TabPanel>
         </Stack>
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <Button variant="contained" color="secondary" onClick={handleClean}>Clean</Button>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button variant="contained" color="secondary" onClick={handleClean}>
+            Clean
+          </Button>
         </Box>
-        {openSuccessAlert &&
+        {openSuccessAlert && (
           <Alert
             severity="success"
             color="success"
@@ -206,8 +256,8 @@ const GoogleDocsHtmlCleanerPage = () => {
           >
             HTML Cleaned successfully!
           </Alert>
-        }
-        {openErrorAlert &&
+        )}
+        {openErrorAlert && (
           <Alert
             severity="error"
             color="error"
@@ -217,14 +267,21 @@ const GoogleDocsHtmlCleanerPage = () => {
             <AlertTitle>Error</AlertTitle>
             {errorMessage}
           </Alert>
-        }
+        )}
         <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
-          <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between">
-            <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">Result</Typography>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            justifyContent="space-between"
+          >
+            <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
+              Result
+            </Typography>
             <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
-              <Button variant="contained" size="small" startIcon={<ContentCopy />}>
-                Copy
-              </Button>
+              <CopyButton
+                variant="contained"
+                size="small"
+                textToCopy={cleanedHtml}
+              />
               <Button variant="contained" size="small" startIcon={<Download />}>
                 Download
               </Button>
@@ -241,41 +298,43 @@ const GoogleDocsHtmlCleanerPage = () => {
           <Typography variant="h6" gutterBottom>
             <strong>Google Docs → AO3, minus the mess</strong>
           </Typography>
-          <Typography component="p" >
-            When you paste content from Google Docs into AO3’s Rich Text Editor, you might notice
-            weird extra spacing, especially around italicised text. That’s because Google Docs
-            wraps styled text in complex <code>&lt;span&gt;</code> tags and inline styles that
-            don’t play well with AO3.
+          <Typography component="p">
+            When you paste content from Google Docs into AO3’s Rich Text Editor,
+            you might notice weird extra spacing, especially around italicised
+            text. That’s because Google Docs wraps styled text in complex{" "}
+            <code>&lt;span&gt;</code> tags and inline styles that don’t play
+            well with AO3.
           </Typography>
           <Typography component="p">
-            This tool cleans up the HTML exported from Google Docs and transforms it into a
-            simplified, AO3-friendly version.
+            This tool cleans up the HTML exported from Google Docs and
+            transforms it into a simplified, AO3-friendly version.
           </Typography>
-          <Typography component="p">
-            Here's what the cleaner does:
-          </Typography>
+          <Typography component="p">Here's what the cleaner does:</Typography>
           <List dense sx={{ listStyleType: "disc", pl: 4 }}>
             <ListItem sx={{ display: "list-item" }}>
-              Preserves basic inline formatting: <strong>bold</strong>, <em>italics</em>
-              , <u>underline</u>, and <s>strikethrough</s>, converting them into their semantic
-              HTML tags (<code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, etc.)
+              Preserves basic inline formatting: <strong>bold</strong>,{" "}
+              <em>italics</em>, <u>underline</u>, and <s>strikethrough</s>,
+              converting them into their semantic HTML tags (
+              <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, etc.)
             </ListItem>
             <ListItem sx={{ display: "list-item" }}>
               Retains paragraph alignment (left, right, center, justify)
             </ListItem>
             <ListItem sx={{ display: "list-item" }}>
-              Other formatting (e.g. lists, headings, images, indentation, etc.) is not supported
+              Other formatting (e.g. lists, headings, images, indentation, etc.)
+              is not supported
             </ListItem>
           </List>
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Important: Only Use Google Docs HTML
           </Typography>
           <Typography component="p">
-            This tool is built <strong>specifically</strong> for HTML exported from Google Docs.
+            This tool is built <strong>specifically</strong> for HTML exported
+            from Google Docs.
           </Typography>
           <Typography component="p" color="error">
-            <strong>Do not paste HTML from other sources</strong> as the structure will be
-            different and might not clean correctly.
+            <strong>Do not paste HTML from other sources</strong> as the
+            structure will be different and might not clean correctly.
           </Typography>
           <Typography component="p">
             To export your HTML from Google Docs:
@@ -288,7 +347,8 @@ const GoogleDocsHtmlCleanerPage = () => {
               Click <strong>File → Download → Web Page (.html, zipped)</strong>
             </ListItem>
             <ListItem sx={{ display: "list-item" }}>
-              Extract the <code>.zip</code> file and open the <code>.html</code> file inside
+              Extract the <code>.zip</code> file and open the <code>.html</code>{" "}
+              file inside
             </ListItem>
           </List>
         </Stack>
