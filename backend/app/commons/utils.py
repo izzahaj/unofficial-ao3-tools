@@ -3,9 +3,12 @@ from werkzeug.datastructures import FileStorage
 from .exceptions import InvalidHTMLFile
 
 
-def not_empty_html(value: str):
-    if not value.strip():
-        raise ValidationError("HTML content cannot be empty.")
+def not_empty_string(field_name: str):
+    def validator(value: str):
+        if not value or not value.strip():
+            raise ValidationError(f"{field_name} cannot be empty.")
+
+    return validator
 
 
 def read_uploaded_html_file(file: FileStorage) -> str:

@@ -2,11 +2,16 @@ import os
 from typing import List, Tuple, Match
 from werkzeug.datastructures import FileStorage
 from .utils import escape_character
-from .constants import ANCHOR_TEMPLATE, CLASS_TEMPLATE, CSS_TEMPLATE, TRANSLATION_PATTERN
+from .constants import (
+    ANCHOR_TEMPLATE,
+    CLASS_TEMPLATE,
+    CSS_TEMPLATE,
+    TRANSLATION_PATTERN,
+)
 from ..commons.utils import read_uploaded_html_file
 
 
-def generate_translations_from_file(file: FileStorage, chapter: int) -> Tuple[str, str]:
+def generate_translations_from_file(file: FileStorage, chapter: str) -> Tuple[str, str]:
     """
     Reads and decodes an uploaded HTML file, then processes it to extract translation pairs
     and generate corresponding annotated HTML and CSS.
@@ -25,7 +30,7 @@ def generate_translations_from_file(file: FileStorage, chapter: int) -> Tuple[st
     return generate_translations(html, chapter)
 
 
-def generate_translations(html: str, chapter: int) -> Tuple[str, str]:
+def generate_translations(html: str, chapter: str) -> Tuple[str, str]:
     """
     Processes the input HTML string to extract translation pairs and
     replace them with annotated HTML elements. Also generates corresponding CSS.
@@ -43,7 +48,7 @@ def generate_translations(html: str, chapter: int) -> Tuple[str, str]:
 
 
 def replace_and_extract_translations(
-    html: str, chapter: int
+    html: str, chapter: str
 ) -> Tuple[str, List[Tuple[str, str]]]:
     """
     Replaces translation markers in the HTML with anchor-based span elements and
@@ -72,7 +77,7 @@ def replace_and_extract_translations(
     return new_html, translation_pairs
 
 
-def generate_css(pairs: List[Tuple[str, str]], chapter: int) -> str:
+def generate_css(pairs: List[Tuple[str, str]], chapter: str) -> str:
     """
     Generates CSS rules that toggle between original and translated text on hover/focus.
 
