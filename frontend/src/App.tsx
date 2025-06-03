@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router";
 import MainLayout from "./common/layout/MainLayout";
 import GoogleDocsHtmlCleanerPage from "./pages/GoogleDocsHtmlCleanerPage";
 import HomePage from "./pages/HomePage";
+import HoverTranslationPage from "./pages/HoverTranslationPage";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             path="/google-docs-html-cleaner"
             element={<GoogleDocsHtmlCleanerPage />}
           />
+          <Route path="/hover-translation" element={<HoverTranslationPage />} />
         </Route>
       </Routes>
     </>

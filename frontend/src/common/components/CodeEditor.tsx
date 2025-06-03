@@ -1,17 +1,16 @@
 import Editor, { type OnChange } from "@monaco-editor/react";
 import { Skeleton } from "@mui/material";
 
-type HtmlEditorProps = {
+type CodeEditorProps = {
   readOnly?: boolean;
   value: string;
   onChange?: OnChange;
+  language: string;
 };
 
-const HtmlEditor: React.FC<HtmlEditorProps> = ({
-  readOnly = false,
-  value,
-  onChange,
-}) => {
+const CodeEditor: React.FC<CodeEditorProps> = (props) => {
+  const { readOnly = false, value, onChange, language } = props;
+
   const options = {
     scrollBeyondLastLine: false,
     fontSize: 14,
@@ -28,7 +27,7 @@ const HtmlEditor: React.FC<HtmlEditorProps> = ({
     <Editor
       options={options}
       defaultLanguage="html"
-      language="html"
+      language={language}
       width="100%"
       height="100%"
       theme="vs-dark"
@@ -39,4 +38,4 @@ const HtmlEditor: React.FC<HtmlEditorProps> = ({
   );
 };
 
-export default HtmlEditor;
+export default CodeEditor;

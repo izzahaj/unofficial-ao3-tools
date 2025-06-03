@@ -2,7 +2,7 @@ import re
 
 TRANSLATION_PATTERN = re.compile(r"\{(.*?)\s\[(.+?)\]\}")
 
-CLASS_TEMPLATE = "ch{chapter}text{index}"
+CLASS_TEMPLATE = "ch{chapter_id}text{index}"
 
 ANCHOR_TEMPLATE = (
     '<a name="return{class_str}" rel="nofollow" id="return{class_str}"></a>'
@@ -10,8 +10,7 @@ ANCHOR_TEMPLATE = (
     '<span class="hide">{original}</span></a>'
 )
 
-CSS_TEMPLATE = """
-#workskin a.{class_str}:after {{
+CSS_TEMPLATE = """#workskin a.{class_str}:after {{
   content: "{original}";
 }}
 

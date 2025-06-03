@@ -10,8 +10,7 @@ ANCHOR_TEMPLATE = (
     '<span class="hide">{original}</span></a>'
 )
 
-CSS_TEMPLATE = """
-#workskin a.{class_str}:after {{
+CSS_TEMPLATE ="""#workskin a.{class_str}:after {{
   content: "{original}";
 }}
 

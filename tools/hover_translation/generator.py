@@ -73,5 +73,6 @@ def generate_css(pairs: List[Tuple[str, str]], chapter: int) -> str:
             translated=utils.escape_character(translated, '"'),
         )
 
-    css_blocks.append(css_block)
+        css_blocks.append(css_block)
+        
     return os.linesep.join(css_blocks)
