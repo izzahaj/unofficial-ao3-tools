@@ -1,22 +1,15 @@
-import {
-  type FieldValues,
-  FormProvider as Form,
-  type UseFormReturn,
-} from "react-hook-form";
+import { FormProvider as Form, type UseFormReturn } from "react-hook-form";
 
 // -------------------------------------------------------------------------------------------------
 
-type FormProviderProps<T extends FieldValues> = {
+type FormProviderProps = {
   children: React.ReactNode;
-  methods: UseFormReturn<T>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  methods: UseFormReturn<any>;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
 };
 
-const FormProvider = <T extends FieldValues>({
-  children,
-  onSubmit,
-  methods,
-}: FormProviderProps<T>) => {
+const FormProvider = ({ children, onSubmit, methods }: FormProviderProps) => {
   return (
     <Form {...methods}>
       <form noValidate onSubmit={onSubmit}>

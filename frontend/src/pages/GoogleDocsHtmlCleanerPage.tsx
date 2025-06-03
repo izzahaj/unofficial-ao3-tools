@@ -12,11 +12,11 @@ import axios from "axios";
 import type { editor } from "monaco-editor";
 import { useState } from "react";
 
-import ClearEditorButton from "../common/components/ClearEditorButton";
-import CodeEditor from "../common/components/CodeEditor";
-import CopyButton from "../common/components/CopyButton";
-import DownloadButton from "../common/components/DownloadButton";
-import FileUploadButton from "../common/components/FileUploadButton";
+import CopyButton from "../common/components/buttons/CopyButton";
+import DownloadButton from "../common/components/buttons/DownloadButton";
+import ClearEditorButton from "../common/components/codeEditor/ClearEditorButton";
+import CodeEditor from "../common/components/codeEditor/CodeEditor";
+import FileUploadButton from "../common/components/fileUpload/FileUploadButton";
 import TabPanel from "../common/components/TabPanel";
 import {
   HTML_CLEANER_SVC_CLEAN_FILE_URI,
@@ -170,17 +170,15 @@ const GoogleDocsHtmlCleanerPage = () => {
                   <ClearEditorButton
                     variant="contained"
                     size="small"
-                    setValue={setEditorContent}
+                    onClick={() => setEditorContent("")}
                   />
                 </Stack>
               </Stack>
-              <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-                <CodeEditor
-                  value={editorContent}
-                  onChange={handleEditorChange}
-                  language="html"
-                />
-              </Box>
+              <CodeEditor
+                value={editorContent}
+                onChange={handleEditorChange}
+                language="html"
+              />
             </Stack>
           </TabPanel>
           <TabPanel
@@ -256,9 +254,7 @@ const GoogleDocsHtmlCleanerPage = () => {
               />
             </Stack>
           </Stack>
-          <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-            <CodeEditor readOnly={true} value={cleanedHtml} language="html" />
-          </Box>
+          <CodeEditor readOnly={true} value={cleanedHtml} language="html" />
         </Stack>
         <InfoSection />
       </Stack>

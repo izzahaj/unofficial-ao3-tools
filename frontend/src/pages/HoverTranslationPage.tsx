@@ -1,3 +1,4 @@
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Alert,
   AlertTitle,
@@ -6,18 +7,20 @@ import {
   Stack,
   Tab,
   Tabs,
-  TextField,
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import type { editor } from "monaco-editor";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-import ClearEditorButton from "../common/components/ClearEditorButton";
-import CodeEditor from "../common/components/CodeEditor";
-import CopyButton from "../common/components/CopyButton";
-import DownloadButton from "../common/components/DownloadButton";
-import FileUploadButton from "../common/components/FileUploadButton";
+import CopyButton from "../common/components/buttons/CopyButton";
+import DownloadButton from "../common/components/buttons/DownloadButton";
+import ClearEditorButton from "../common/components/codeEditor/ClearEditorButton";
+import CodeEditor from "../common/components/codeEditor/CodeEditor";
+import FormProvider from "../common/components/hookForm/FormProvider";
+import RHFCodeEditor from "../common/components/hookForm/RHFCodeEditor";
+import RHFFileUploadButton from "../common/components/hookForm/RHFFileUploadButton";
+import RHFTextField from "../common/components/hookForm/RHFTextField";
 import TabPanel from "../common/components/TabPanel";
 import {
   HOVER_TRANSLATION_SVC_GENERATE_FILE_URI,
@@ -25,32 +28,14 @@ import {
 } from "../config/uris";
 import EditorTabLabel from "../features/HoverTranslation/components/EditorTabLabel";
 import FileUploadTabLabel from "../features/HoverTranslation/components/FileUploadTabLabel";
+import { hoverTranslationSchema } from "../features/HoverTranslation/schema/HoverTranslationSchema";
 
 const HoverTranslationPage = () => {
-  const [tabValue, setTabValue] = useState("editor");
-  const [uploadedFile, setUploadedFile] = useState<File>();
-  const [editorContent, setEditorContent] = useState("");
-  const [chapterId, setChapterId] = useState("");
   const [generatedHtml, setGeneratedHtml] = useState("");
   const [generatedCss, setGeneratedCss] = useState("");
   const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const handleEditorChange = (
-    value: string | undefined,
-    _event: editor.IModelContentChangedEvent,
-  ) => {
-    setEditorContent(value || "");
-  };
-
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
-    setTabValue(newValue);
-  };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUploadedFile(event.target.files?.[0]);
-  };
 
   const resetAlerts = () => {
     setOpenSuccessAlert(false);
@@ -63,28 +48,52 @@ const HoverTranslationPage = () => {
     setGeneratedCss("");
   };
 
-  const handleGenerateFromString = async () => {
+  const defaultValues = {
+    mode: "editor",
+    chapterId: "",
+    html: "",
+    file: undefined,
+  };
+
+  const methods = useForm({
+    resolver: yupResolver(hoverTranslationSchema),
+    defaultValues,
+  });
+
+  const {
+    handleSubmit,
+    watch,
+    setValue,
+    resetField,
+    formState: { isSubmitting },
+  } = methods;
+
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
+    setValue("mode", newValue);
+  };
+
+  const isTabDisabled = (value: string) => {
+    return isSubmitting && watch("mode") != value;
+  };
+
+  const handleGenerateFromString = async (html: string, chapterId: string) => {
     const url = HOVER_TRANSLATION_SVC_GENERATE_URI;
     const config = {
       headers: {
         "Content-Type": "application/json",
       },
     };
-    const data = { html: editorContent, chapterId: chapterId };
+    const submittedData = { html, chapterId };
 
-    const response = await axios.post(url, data, config);
+    const response = await axios.post(url, submittedData, config);
     return response.data;
   };
 
-  const handleGenerateFromFile = async () => {
-    if (!uploadedFile) {
-      throw new Error("No file selected. Please upload a file first.");
-    }
-
+  const handleGenerateFromFile = async (file: File, chapterId: string) => {
     const url = HOVER_TRANSLATION_SVC_GENERATE_FILE_URI;
     const formData = new FormData();
-    formData.append("file", uploadedFile);
-    formData.append("chapterId", String(chapterId));
+    formData.append("file", file);
+    formData.append("chapterId", chapterId);
 
     const config = {
       headers: {
@@ -97,23 +106,26 @@ const HoverTranslationPage = () => {
     return response.data;
   };
 
-  const handleGenerate = async () => {
+  const onSubmit = handleSubmit(async (data) => {
     resetAlerts();
     resetResultEditors();
 
-    try {
-      let data; // type?
+    const { html, file, chapterId, mode } = data;
+    let submittedData;
 
-      if (tabValue === "editor") {
-        data = await handleGenerateFromString();
+    try {
+      if (mode === "editor" && html) {
+        submittedData = await handleGenerateFromString(html, chapterId);
+      } else if (mode === "upload" && file) {
+        submittedData = await handleGenerateFromFile(file, chapterId);
       } else {
-        data = await handleGenerateFromFile();
+        throw Error("Something went wrong! Please try again later.");
       }
 
-      const { html, css } = data;
+      const { html: newHtml, css: newCss } = submittedData;
 
-      setGeneratedHtml(html);
-      setGeneratedCss(css);
+      setGeneratedHtml(newHtml);
+      setGeneratedCss(newCss);
       setOpenSuccessAlert(true);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -126,8 +138,6 @@ const HoverTranslationPage = () => {
           setErrorMessage("Something went wrong! Please try again later.");
         }
       } else if (err instanceof Error) {
-        // TODO: Come up with a better way to catch no file uploaded error
-        // perhaps with react hook form + yup validation?
         setErrorMessage(err.message);
       } else {
         setErrorMessage("Something went wrong! Please try again later.");
@@ -135,7 +145,7 @@ const HoverTranslationPage = () => {
       console.error(err);
       setOpenErrorAlert(true);
     }
-  };
+  });
 
   return (
     <>
@@ -143,128 +153,141 @@ const HoverTranslationPage = () => {
         <Typography variant="h5" fontWeight="bold">
           Hover Translation Generator
         </Typography>
-        <Stack>
-          <Box>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              textColor="secondary"
-              indicatorColor="secondary"
-            >
-              <Tab value="editor" label={<EditorTabLabel />} />
-              <Tab value="upload" label={<FileUploadTabLabel />} />
-            </Tabs>
-          </Box>
-          <TabPanel
-            value={tabValue}
-            name="editor"
-            sx={{ p: 2, display: "flex", flexDirection: "column" }}
-          >
-            <Stack rowGap={1} sx={{ flex: 1, minHeight: "75vh" }}>
-              <Stack
-                direction={{ xs: "column", sm: "row" }}
-                justifyContent="space-between"
+        <FormProvider methods={methods} onSubmit={onSubmit}>
+          <Stack>
+            <Box>
+              <Tabs
+                value={watch("mode")}
+                onChange={handleTabChange}
+                textColor="secondary"
+                indicatorColor="secondary"
               >
+                <Tab
+                  value="editor"
+                  label={<EditorTabLabel />}
+                  disabled={isTabDisabled("editor")}
+                />
+                <Tab
+                  value="upload"
+                  label={<FileUploadTabLabel />}
+                  disabled={isTabDisabled("upload")}
+                />
+              </Tabs>
+            </Box>
+            <TabPanel
+              value={watch("mode")}
+              name="editor"
+              sx={{ p: 2, display: "flex", flexDirection: "column" }}
+            >
+              <Stack rowGap={1} sx={{ flex: 1, minHeight: "75vh" }}>
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  justifyContent="space-between"
+                >
+                  <Typography
+                    variant="h6"
+                    fontWeight="bold"
+                    alignSelf="flex-start"
+                  >
+                    Type or paste HTML into the editor
+                  </Typography>
+                  <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
+                    <CopyButton
+                      variant="contained"
+                      size="small"
+                      textToCopy={watch("html") ?? defaultValues.html}
+                    />
+                    <ClearEditorButton
+                      variant="contained"
+                      size="small"
+                      onClick={() => resetField("html")}
+                    />
+                  </Stack>
+                </Stack>
+                <RHFCodeEditor name="html" language="html" />
+              </Stack>
+            </TabPanel>
+            <TabPanel
+              value={watch("mode")}
+              name="upload"
+              sx={{ p: 2, display: "flex", flexDirection: "column" }}
+            >
+              <Stack rowGap={1} sx={{ flex: 1 }}>
                 <Typography
                   variant="h6"
                   fontWeight="bold"
                   alignSelf="flex-start"
                 >
-                  Type or paste HTML into the editor
+                  Upload your fic's HTML file
                 </Typography>
-                <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
-                  <CopyButton
-                    variant="contained"
-                    size="small"
-                    textToCopy={editorContent}
-                  />
-                  <ClearEditorButton
-                    variant="contained"
-                    size="small"
-                    setValue={setEditorContent}
-                  />
-                </Stack>
-              </Stack>
-              <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-                <CodeEditor
-                  value={editorContent}
-                  onChange={handleEditorChange}
-                  language="html"
+                <RHFFileUploadButton
+                  name="file"
+                  variant="contained"
+                  size="small"
+                  accept=".html"
+                  disabled={isSubmitting}
                 />
-              </Box>
-            </Stack>
-          </TabPanel>
-          <TabPanel
-            value={tabValue}
-            name="upload"
-            sx={{ p: 2, display: "flex", flexDirection: "column" }}
+              </Stack>
+            </TabPanel>
+          </Stack>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            <Stack rowGap={1} sx={{ flex: 1 }}>
-              <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
-                Upload your fic's HTML file
-              </Typography>
-              <FileUploadButton
-                variant="contained"
-                size="small"
-                accept=".html"
-                onFileSelect={handleFileUpload}
-              />
-            </Stack>
-          </TabPanel>
-        </Stack>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <TextField
-            label="Chapter ID"
-            type="text"
-            size="medium"
-            sx={{ width: "175px" }}
-            onChange={(e) => setChapterId(e.target.value)}
-            helperText="IDs must be unique within each fic. Chapter numbers recommended."
-            required
-          />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleGenerate}
+            <RHFTextField
+              name="chapterId"
+              label="Chapter ID"
+              type="text"
+              size="medium"
+              sx={{ width: "175px" }}
+              helperText="IDs must be unique within each fic. Chapter numbers recommended."
+              slotProps={{ htmlInput: { maxLength: 12 } }}
+              required
+              disabled={isSubmitting}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
           >
-            Generate Files
-          </Button>
-        </Box>
-        {openSuccessAlert && (
-          <Alert
-            severity="success"
-            color="success"
-            variant="standard"
-            onClose={() => setOpenSuccessAlert(false)}
-          >
-            HTML and CSS files generated successfully!
-          </Alert>
-        )}
-        {openErrorAlert && (
-          <Alert
-            severity="error"
-            color="error"
-            variant="standard"
-            onClose={() => setOpenErrorAlert(false)}
-          >
-            <AlertTitle>Error</AlertTitle>
-            {errorMessage}
-          </Alert>
-        )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              loading={isSubmitting}
+              disabled={isSubmitting}
+            >
+              Generate Files
+            </Button>
+          </Box>
+          {openSuccessAlert && (
+            <Alert
+              severity="success"
+              color="success"
+              variant="standard"
+              onClose={() => setOpenSuccessAlert(false)}
+            >
+              HTML and CSS files generated successfully!
+            </Alert>
+          )}
+          {openErrorAlert && (
+            <Alert
+              severity="error"
+              color="error"
+              variant="standard"
+              onClose={() => setOpenErrorAlert(false)}
+            >
+              <AlertTitle>Error</AlertTitle>
+              {errorMessage}
+            </Alert>
+          )}
+        </FormProvider>
         <Stack direction={{ xs: "column", lg: "row" }}>
           <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
             <Stack
@@ -284,18 +307,12 @@ const HoverTranslationPage = () => {
                   variant="contained"
                   size="small"
                   content={generatedHtml}
-                  fileName={`hover_translation_${chapterId}.html`}
+                  fileName="hover_translation.html"
                   mimeType="text/html"
                 />
               </Stack>
             </Stack>
-            <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-              <CodeEditor
-                readOnly={true}
-                value={generatedHtml}
-                language="html"
-              />
-            </Box>
+            <CodeEditor readOnly={true} value={generatedHtml} language="html" />
           </Stack>
           <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
             <Stack
@@ -315,14 +332,12 @@ const HoverTranslationPage = () => {
                   variant="contained"
                   size="small"
                   content={generatedCss}
-                  fileName={`hover_translation_${chapterId}.css`}
+                  fileName="hover_translation.css"
                   mimeType="text/css"
                 />
               </Stack>
             </Stack>
-            <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-              <CodeEditor readOnly={true} value={generatedCss} language="css" />
-            </Box>
+            <CodeEditor readOnly={true} value={generatedCss} language="css" />
           </Stack>
         </Stack>
         {/* TODO: Add info section */}
