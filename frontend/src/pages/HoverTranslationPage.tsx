@@ -6,6 +6,7 @@ import {
   Stack,
   Tab,
   Tabs,
+  TextField,
   Typography,
 } from "@mui/material";
 import axios from "axios";
@@ -19,18 +20,19 @@ import DownloadButton from "../common/components/DownloadButton";
 import FileUploadButton from "../common/components/FileUploadButton";
 import TabPanel from "../common/components/TabPanel";
 import {
-  HTML_CLEANER_SVC_CLEAN_FILE_URI,
-  HTML_CLEANER_SVC_CLEAN_URI,
+  HOVER_TRANSLATION_SVC_GENERATE_FILE_URI,
+  HOVER_TRANSLATION_SVC_GENERATE_URI,
 } from "../config/uris";
-import EditorTabLabel from "../features/HtmlCleaner/components/EditorTabLabel";
-import FileUploadTabLabel from "../features/HtmlCleaner/components/FileUploadTabLabel";
-import InfoSection from "../features/HtmlCleaner/components/InfoSection";
+import EditorTabLabel from "../features/HoverTranslation/components/EditorTabLabel";
+import FileUploadTabLabel from "../features/HoverTranslation/components/FileUploadTabLabel";
 
-const GoogleDocsHtmlCleanerPage = () => {
+const HoverTranslationPage = () => {
   const [tabValue, setTabValue] = useState("editor");
   const [uploadedFile, setUploadedFile] = useState<File>();
   const [editorContent, setEditorContent] = useState("");
-  const [cleanedHtml, setCleanedHtml] = useState("");
+  const [chapterId, setChapterId] = useState("");
+  const [generatedHtml, setGeneratedHtml] = useState("");
+  const [generatedCss, setGeneratedCss] = useState("");
   const [openSuccessAlert, setOpenSuccessAlert] = useState(false);
   const [openErrorAlert, setOpenErrorAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,27 +58,33 @@ const GoogleDocsHtmlCleanerPage = () => {
     setErrorMessage("");
   };
 
-  const handleCleanHtmlString = async () => {
-    const url = HTML_CLEANER_SVC_CLEAN_URI;
+  const resetResultEditors = () => {
+    setGeneratedHtml("");
+    setGeneratedCss("");
+  };
+
+  const handleGenerateFromString = async () => {
+    const url = HOVER_TRANSLATION_SVC_GENERATE_URI;
     const config = {
       headers: {
         "Content-Type": "application/json",
       },
     };
-    const data = { html: editorContent };
+    const data = { html: editorContent, chapterId: chapterId };
 
     const response = await axios.post(url, data, config);
-    return response.data.cleanedHtml;
+    return response.data;
   };
 
-  const handleCleanFile = async () => {
+  const handleGenerateFromFile = async () => {
     if (!uploadedFile) {
       throw new Error("No file selected. Please upload a file first.");
     }
 
-    const url = HTML_CLEANER_SVC_CLEAN_FILE_URI;
+    const url = HOVER_TRANSLATION_SVC_GENERATE_FILE_URI;
     const formData = new FormData();
     formData.append("file", uploadedFile);
+    formData.append("chapterId", String(chapterId));
 
     const config = {
       headers: {
@@ -86,23 +94,26 @@ const GoogleDocsHtmlCleanerPage = () => {
 
     const response = await axios.post(url, formData, config);
 
-    return response.data.cleanedHtml;
+    return response.data;
   };
 
-  const handleClean = async (_event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleGenerate = async () => {
     resetAlerts();
-    setCleanedHtml("");
+    resetResultEditors();
 
     try {
-      let cleaned: string;
+      let data; // type?
 
       if (tabValue === "editor") {
-        cleaned = await handleCleanHtmlString();
+        data = await handleGenerateFromString();
       } else {
-        cleaned = await handleCleanFile();
+        data = await handleGenerateFromFile();
       }
 
-      setCleanedHtml(cleaned);
+      const { html, css } = data;
+
+      setGeneratedHtml(html);
+      setGeneratedCss(css);
       setOpenSuccessAlert(true);
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -130,7 +141,7 @@ const GoogleDocsHtmlCleanerPage = () => {
     <>
       <Stack rowGap={2} direction="column" sx={{ width: "100%", p: 0, m: 0 }}>
         <Typography variant="h5" fontWeight="bold">
-          Google Docs HTML Cleaner
+          Hover Translation Generator
         </Typography>
         <Stack>
           <Box>
@@ -190,7 +201,7 @@ const GoogleDocsHtmlCleanerPage = () => {
           >
             <Stack rowGap={1} sx={{ flex: 1 }}>
               <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
-                Upload a HTML file exported from Google Docs
+                Upload your fic's HTML file
               </Typography>
               <FileUploadButton
                 variant="contained"
@@ -208,8 +219,29 @@ const GoogleDocsHtmlCleanerPage = () => {
             alignItems: "center",
           }}
         >
-          <Button variant="contained" color="secondary" onClick={handleClean}>
-            Clean
+          <TextField
+            label="Chapter ID"
+            type="text"
+            size="medium"
+            sx={{ width: "175px" }}
+            onChange={(e) => setChapterId(e.target.value)}
+            helperText="IDs must be unique within each fic. Chapter numbers recommended."
+            required
+          />
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleGenerate}
+          >
+            Generate Files
           </Button>
         </Box>
         {openSuccessAlert && (
@@ -219,7 +251,7 @@ const GoogleDocsHtmlCleanerPage = () => {
             variant="standard"
             onClose={() => setOpenSuccessAlert(false)}
           >
-            HTML cleaned successfully!
+            HTML and CSS files generated successfully!
           </Alert>
         )}
         {openErrorAlert && (
@@ -233,37 +265,70 @@ const GoogleDocsHtmlCleanerPage = () => {
             {errorMessage}
           </Alert>
         )}
-        <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
-            justifyContent="space-between"
-          >
-            <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
-              Result
-            </Typography>
-            <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
-              <CopyButton
-                variant="contained"
-                size="small"
-                textToCopy={cleanedHtml}
-              />
-              <DownloadButton
-                variant="contained"
-                size="small"
-                content={cleanedHtml}
-                fileName="cleaned.html"
-                mimeType="text/html"
-              />
+        <Stack direction={{ xs: "column", lg: "row" }}>
+          <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+            >
+              <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
+                Result (HTML)
+              </Typography>
+              <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
+                <CopyButton
+                  variant="contained"
+                  size="small"
+                  textToCopy={generatedHtml}
+                />
+                <DownloadButton
+                  variant="contained"
+                  size="small"
+                  content={generatedHtml}
+                  fileName={`hover_translation_${chapterId}.html`}
+                  mimeType="text/html"
+                />
+              </Stack>
             </Stack>
+            <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
+              <CodeEditor
+                readOnly={true}
+                value={generatedHtml}
+                language="html"
+              />
+            </Box>
           </Stack>
-          <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
-            <CodeEditor readOnly={true} value={cleanedHtml} language="html" />
-          </Box>
+          <Stack rowGap={1} sx={{ p: 2, flex: 1, minHeight: "75vh" }}>
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              justifyContent="space-between"
+            >
+              <Typography variant="h6" fontWeight="bold" alignSelf="flex-start">
+                Result (CSS)
+              </Typography>
+              <Stack direction="row" columnGap={0.5} alignSelf="flex-end">
+                <CopyButton
+                  variant="contained"
+                  size="small"
+                  textToCopy={generatedCss}
+                />
+                <DownloadButton
+                  variant="contained"
+                  size="small"
+                  content={generatedCss}
+                  fileName={`hover_translation_${chapterId}.css`}
+                  mimeType="text/css"
+                />
+              </Stack>
+            </Stack>
+            <Box sx={{ overflow: "hidden", flex: 1, borderRadius: 1 }}>
+              <CodeEditor readOnly={true} value={generatedCss} language="css" />
+            </Box>
+          </Stack>
         </Stack>
-        <InfoSection />
+        {/* TODO: Add info section */}
       </Stack>
     </>
   );
 };
 
-export default GoogleDocsHtmlCleanerPage;
+export default HoverTranslationPage;

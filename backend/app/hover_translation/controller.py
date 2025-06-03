@@ -18,7 +18,7 @@ def generate_from_text():
         return jsonify({"error": first_error}), 400
 
     html = data.get("html")
-    chapter_id = data.get("chapterId")
+    chapter_id = data.get("chapter_id")
 
     try:
         new_html, new_css = generate_translations(html, chapter_id)
@@ -37,7 +37,7 @@ def generate_from_file():
         return jsonify({"error": first_error}), 400
 
     uploaded_file = data.get("file")
-    chapter_id = data.get("chapterId")
+    chapter_id = data.get("chapter_id")
 
     try:
         new_html, new_css = generate_translations_from_file(uploaded_file, chapter_id)

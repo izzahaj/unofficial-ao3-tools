@@ -13,7 +13,7 @@ length_validator = Length(
 
 class HoverTranslationSchema(Schema):
     html = fields.String(required=True, validate=not_empty_string("HTML"))
-    chapter = fields.String(
+    chapter_id = fields.String(
         required=True,
         data_key="chapterId",
         validate=[
@@ -26,7 +26,7 @@ class HoverTranslationSchema(Schema):
 
 class HoverTranslationFileSchema(Schema):
     file = fields.Field(required=True)
-    chapter = fields.String(
+    chapter_id = fields.String(
         required=True,
         data_key="chapterId",
         validate=[
