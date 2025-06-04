@@ -31,9 +31,7 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = (props) => {
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
-    if (!controlledFiles) {
-      setInternalFiles(selectedFiles);
-    }
+    setInternalFiles(selectedFiles);
     onFileSelect(event);
   };
 

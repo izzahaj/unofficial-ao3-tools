@@ -10,27 +10,35 @@ type RHFFileUploadButtonProps = Omit<FileUploadButtonProps, "onFileSelect"> & {
 
 const RHFFileUploadButton: React.FC<RHFFileUploadButtonProps> = (props) => {
   const { name, children, ...other } = props;
-  const { control } = useFormContext();
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+  const arrayError = errors?.[name];
+  const errorMessage = Array.isArray(arrayError)
+    ? arrayError[0]?.message
+    : arrayError?.message;
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field, fieldState: { error } }) => (
+      render={({ field: { onChange, value } }) => (
         <Stack rowGap={1}>
           <FileUploadButton
-            {...field}
-            files={field.value ?? []}
+            files={value}
             onFileSelect={(e) => {
               const files = e.target.files ? Array.from(e.target.files) : [];
-              field.onChange(files);
+              onChange(files);
             }}
             {...other}
           >
             {children}
           </FileUploadButton>
-          {error && (
-            <FormHelperText error={!!error}>{error?.message}</FormHelperText>
+          {errorMessage && (
+            <FormHelperText error={!!errorMessage}>
+              {errorMessage}
+            </FormHelperText>
           )}
         </Stack>
       )}
