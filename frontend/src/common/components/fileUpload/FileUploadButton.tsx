@@ -1,12 +1,8 @@
 import { CloudUpload } from "@mui/icons-material";
-import {
-  Button,
-  type ButtonProps,
-  Stack,
-  styled,
-  Typography,
-} from "@mui/material";
+import { Button, Stack, styled, Typography } from "@mui/material";
 import { useState } from "react";
+
+import type { FileUploadButtonProps } from "./FileUploadButton.types";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,28 +16,22 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-type FileUploadButtonProps = ButtonProps & {
-  onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  accept?: string;
-  multiple?: boolean;
-  children?: React.ReactNode;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
-};
-
 const FileUploadButton: React.FC<FileUploadButtonProps> = (props) => {
   const {
     onFileSelect,
     accept,
     multiple = false,
     children = "Choose file",
-    inputProps,
+    files: controlledFiles,
     ...buttonProps
   } = props;
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [internalFiles, setInternalFiles] = useState<File[]>([]);
+  const files = controlledFiles ?? internalFiles;
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFiles(Array.from(event.target.files || []));
+    const selectedFiles = Array.from(event.target.files || []);
+    setInternalFiles(selectedFiles);
     onFileSelect(event);
   };
 
@@ -60,7 +50,6 @@ const FileUploadButton: React.FC<FileUploadButtonProps> = (props) => {
           accept={accept}
           onChange={handleFileSelect}
           multiple={multiple}
-          {...inputProps}
         />
       </Button>
       <Stack flex={1} overflow="hidden" whiteSpace="nowrap">
