@@ -21,7 +21,7 @@ import EditorTabLabel from "../features/HoverTranslation/components/EditorTabLab
 import FileUploadTabLabel from "../features/HoverTranslation/components/FileUploadTabLabel";
 import UploadForm from "../features/HoverTranslation/components/UploadForm";
 import { editorFormSchema } from "../features/HoverTranslation/schema/EditorFormSchema";
-import { uploadFormSchema } from "../features/HoverTranslation/schema/HoverTranslationUploadSchema";
+import { uploadFormSchema } from "../features/HoverTranslation/schema/UploadFormSchema";
 
 const HoverTranslationPage = () => {
   const [tabValue, setTabValue] = useState("editor");
