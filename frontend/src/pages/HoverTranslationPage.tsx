@@ -239,7 +239,6 @@ const HoverTranslationPage = () => {
             <CodeEditor readOnly={true} value={generatedCss} language="css" />
           </Stack>
         </Stack>
-        {/* TODO: Add info section */}
       </Stack>
     </>
   );
